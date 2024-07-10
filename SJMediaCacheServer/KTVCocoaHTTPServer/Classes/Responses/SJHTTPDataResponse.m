@@ -1,4 +1,4 @@
-#import "HTTPDataResponse.h"
+#import "SJHTTPDataResponse.h"
 #import "HTTPLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -10,7 +10,7 @@
 static const int httpLogLevel = HTTP_LOG_LEVEL_OFF; // | HTTP_LOG_FLAG_TRACE;
 
 
-@implementation HTTPDataResponse
+@implementation SJHTTPDataResponse
 
 - (id)initWithData:(NSData *)dataParam
 {

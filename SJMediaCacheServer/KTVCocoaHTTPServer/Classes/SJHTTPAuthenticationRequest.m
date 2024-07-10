@@ -1,19 +1,19 @@
-#import "HTTPAuthenticationRequest.h"
-#import "HTTPMessage.h"
+#import "SJHTTPAuthenticationRequest.h"
+#import "SJHTTPMessage.h"
 
 #if ! __has_feature(objc_arc)
 #warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
-@interface HTTPAuthenticationRequest (PrivateAPI)
+@interface SJHTTPAuthenticationRequest (PrivateAPI)
 - (NSString *)quotedSubHeaderFieldValue:(NSString *)param fromHeaderFieldValue:(NSString *)header;
 - (NSString *)nonquotedSubHeaderFieldValue:(NSString *)param fromHeaderFieldValue:(NSString *)header;
 @end
 
 
-@implementation HTTPAuthenticationRequest
+@implementation SJHTTPAuthenticationRequest
 
-- (id)initWithRequest:(HTTPMessage *)request
+- (id)initWithRequest:(SJHTTPMessage *)request
 {
 	if ((self = [super init]))
 	{

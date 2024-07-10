@@ -104,7 +104,7 @@
 
 @end
 
-@interface MCSHTTPServer : HTTPServer
+@interface MCSHTTPServer : SJHTTPServer
 - (instancetype)initWithProxyServer:(__weak MCSProxyServer *)proxyServer;
 @property (nonatomic, weak, readonly, nullable) MCSProxyServer *mcs_server;
 @end
@@ -118,17 +118,17 @@
     return self;
 }
 
-- (HTTPConfig *)config {
-    return [HTTPConfig.alloc initWithServer:self documentRoot:self->documentRoot queue:mcs_queue()];
+- (SJHTTPConfig *)config {
+    return [SJHTTPConfig.alloc initWithServer:self documentRoot:self->documentRoot queue:mcs_queue()];
 }
 @end
 
-@interface MCSHTTPConnection : HTTPConnection
-- (HTTPMessage *)mcs_request;
+@interface MCSHTTPConnection : SJHTTPConnection
+- (SJHTTPMessage *)mcs_request;
 - (MCSProxyServer *)mcs_server;
 @end
  
-@interface MCSHTTPResponse : NSObject<HTTPResponse, MCSProxyTaskDelegate>
+@interface MCSHTTPResponse : NSObject<SJHTTPResponse, MCSProxyTaskDelegate>
 - (instancetype)initWithConnection:(MCSHTTPConnection *)connection;
 @property (nonatomic, strong) NSURLRequest * request;
 @property (nonatomic, strong) id<MCSProxyTask> task;
@@ -137,7 +137,7 @@
 @end
 
 @interface NSURLRequest (MCSHTTPConnectionExtended)
-+ (NSMutableURLRequest *)mcs_requestWithMessage:(HTTPMessage *)message;
++ (NSMutableURLRequest *)mcs_requestWithMessage:(SJHTTPMessage *)message;
 @end
 
 #pragma mark -
@@ -272,7 +272,7 @@
 #pragma mark -
 
 @implementation MCSHTTPConnection
-- (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(HTTPConfig *)aConfig {
+- (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(SJHTTPConfig *)aConfig {
     self = [super initWithAsyncSocket:newSocket configuration:aConfig];
     if ( self ) {
         MCSHTTPConnectionDebugLog(@"\n%@: <%p>.init;\n", NSStringFromClass(self.class), self);
@@ -280,7 +280,7 @@
     return self;
 }
 
-- (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path {
+- (NSObject<SJHTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path {
     MCSHTTPResponse *response = [MCSHTTPResponse.alloc initWithConnection:self];
     
     MCSHTTPConnectionDebugLog(@"%@: <%p>.response { URL: %@, method: %@, range: %@ };\n", NSStringFromClass(self.class), self, method, response.request.URL, NSStringFromRange(response.request.mcs_range));
@@ -289,7 +289,7 @@
     return response;
 }
 
-- (HTTPMessage *)mcs_request {
+- (SJHTTPMessage *)mcs_request {
     return request;
 }
 
@@ -312,14 +312,14 @@
     MCSHTTPConnectionDebugLog(@"%@: <%p>.dealloc;\n\n", NSStringFromClass(self.class), self);
 }
 
-- (void)responseDidAbort:(NSObject<HTTPResponse> *)sender {
+- (void)responseDidAbort:(NSObject<SJHTTPResponse> *)sender {
     [super responseDidAbort:sender];
     MCSHTTPConnectionDebugLog(@"%@: <%p>.abort;\n", NSStringFromClass(self.class), self);
 }
 @end
 
 @implementation NSURLRequest (MCSHTTPConnectionExtended)
-+ (NSMutableURLRequest *)mcs_requestWithMessage:(HTTPMessage *)message {
++ (NSMutableURLRequest *)mcs_requestWithMessage:(SJHTTPMessage *)message {
     return [self mcs_requestWithURL:message.url headers:message.allHeaderFields];
 }
 @end

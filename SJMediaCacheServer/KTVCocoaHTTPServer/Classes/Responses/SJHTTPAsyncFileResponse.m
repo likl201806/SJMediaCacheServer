@@ -1,5 +1,5 @@
-#import "HTTPAsyncFileResponse.h"
-#import "HTTPConnection.h"
+#import "SJHTTPAsyncFileResponse.h"
+#import "SJHTTPConnection.h"
 #import "HTTPLogging.h"
 
 #import <unistd.h>
@@ -32,9 +32,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
  * we don't open the file until we have to (until the connection starts requesting data).
 **/
 
-@implementation HTTPAsyncFileResponse
+@implementation SJHTTPAsyncFileResponse
 
-- (id)initWithFilePath:(NSString *)fpath forConnection:(HTTPConnection *)parent
+- (id)initWithFilePath:(NSString *)fpath forConnection:(SJHTTPConnection *)parent
 {
 	if ((self = [super init]))
 	{

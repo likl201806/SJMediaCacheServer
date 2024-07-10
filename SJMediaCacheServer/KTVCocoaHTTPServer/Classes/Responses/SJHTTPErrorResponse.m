@@ -1,6 +1,6 @@
-#import "HTTPErrorResponse.h"
+#import "SJHTTPErrorResponse.h"
 
-@implementation HTTPErrorResponse
+@implementation SJHTTPErrorResponse
 
 -(id)initWithErrorCode:(int)httpErrorCode
 {

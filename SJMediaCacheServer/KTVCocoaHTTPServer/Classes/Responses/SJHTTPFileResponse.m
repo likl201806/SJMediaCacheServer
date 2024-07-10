@@ -1,5 +1,5 @@
-#import "HTTPFileResponse.h"
-#import "HTTPConnection.h"
+#import "SJHTTPFileResponse.h"
+#import "SJHTTPConnection.h"
 #import "HTTPLogging.h"
 
 #import <unistd.h>
@@ -16,9 +16,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 #define NULL_FD  -1
 
 
-@implementation HTTPFileResponse
+@implementation SJHTTPFileResponse
 
-- (id)initWithFilePath:(NSString *)fpath forConnection:(HTTPConnection *)parent
+- (id)initWithFilePath:(NSString *)fpath forConnection:(SJHTTPConnection *)parent
 {
 	if((self = [super init]))
 	{

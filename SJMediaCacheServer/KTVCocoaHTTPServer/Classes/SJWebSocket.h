@@ -1,16 +1,16 @@
 #import <Foundation/Foundation.h>
 
-@class HTTPMessage;
+@class SJHTTPMessage;
 @class GCDAsyncSocket;
 
 
 #define WebSocketDidDieNotification  @"WebSocketDidDie"
 
-@interface WebSocket : NSObject
+@interface SJWebSocket : NSObject
 {
 	dispatch_queue_t websocketQueue;
 	
-	HTTPMessage *request;
+	SJHTTPMessage *request;
 	GCDAsyncSocket *asyncSocket;
 	
 	NSData *term;
@@ -22,9 +22,9 @@
 	id __unsafe_unretained delegate;
 }
 
-+ (BOOL)isWebSocketRequest:(HTTPMessage *)request;
++ (BOOL)isWebSocketRequest:(SJHTTPMessage *)request;
 
-- (id)initWithRequest:(HTTPMessage *)request socket:(GCDAsyncSocket *)socket;
+- (id)initWithRequest:(SJHTTPMessage *)request socket:(GCDAsyncSocket *)socket;
 
 /**
  * Delegate option.
@@ -93,13 +93,13 @@
  * One such example, you're already subclassing another class, so subclassing WebSocket isn't an option.
 **/
 
-@protocol WebSocketDelegate
+@protocol SJWebSocketDelegate
 @optional
 
-- (void)webSocketDidOpen:(WebSocket *)ws;
+- (void)webSocketDidOpen:(SJWebSocket *)ws;
 
-- (void)webSocket:(WebSocket *)ws didReceiveMessage:(NSString *)msg;
+- (void)webSocket:(SJWebSocket *)ws didReceiveMessage:(NSString *)msg;
 
-- (void)webSocketDidClose:(WebSocket *)ws;
+- (void)webSocketDidClose:(SJWebSocket *)ws;
 
 @end

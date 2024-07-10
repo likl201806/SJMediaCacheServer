@@ -1,5 +1,5 @@
-#import "WebSocket.h"
-#import "HTTPMessage.h"
+#import "SJWebSocket.h"
+#import "SJHTTPMessage.h"
 #import "GCDAsyncSocket.h"
 #import "DDNumber.h"
 #import "DDData.h"
@@ -51,7 +51,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 	return frame & 0x7F;
 }
 
-@interface WebSocket (PrivateAPI)
+@interface SJWebSocket (PrivateAPI)
 
 - (void)readRequestBody;
 - (void)sendResponseBody;
@@ -63,11 +63,11 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface WebSocket ()<GCDAsyncSocketDelegate>
+@interface SJWebSocket ()<GCDAsyncSocketDelegate>
 
 @end
 
-@implementation WebSocket
+@implementation SJWebSocket
 {
 	BOOL isRFC6455;
 	BOOL nextFrameMasked;
@@ -75,7 +75,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 	NSData *maskingKey;
 }
 
-+ (BOOL)isWebSocketRequest:(HTTPMessage *)request
++ (BOOL)isWebSocketRequest:(SJHTTPMessage *)request
 {
 	// Request (Draft 75):
 	// 
@@ -124,7 +124,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 	return isWebSocket;
 }
 
-+ (BOOL)isVersion76Request:(HTTPMessage *)request
++ (BOOL)isVersion76Request:(SJHTTPMessage *)request
 {
 	NSString *key1 = [request headerField:@"Sec-WebSocket-Key1"];
 	NSString *key2 = [request headerField:@"Sec-WebSocket-Key2"];
@@ -143,7 +143,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 	return isVersion76;
 }
 
-+ (BOOL)isRFC6455Request:(HTTPMessage *)request
++ (BOOL)isRFC6455Request:(SJHTTPMessage *)request
 {
 	NSString *key = [request headerField:@"Sec-WebSocket-Key"];
 	BOOL isRFC6455 = (key != nil);
@@ -159,7 +159,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 
 @synthesize websocketQueue;
 
-- (id)initWithRequest:(HTTPMessage *)aRequest socket:(GCDAsyncSocket *)socket
+- (id)initWithRequest:(SJHTTPMessage *)aRequest socket:(GCDAsyncSocket *)socket
 {
 	HTTPLogTrace();
 	
@@ -378,7 +378,7 @@ static inline NSUInteger WS_PAYLOAD_LENGTH(UInt8 frame)
 	// 8jKS'y:G*Co,Wxa-
 
 	
-	HTTPMessage *wsResponse = [[HTTPMessage alloc] initResponseWithStatusCode:101
+	SJHTTPMessage *wsResponse = [[SJHTTPMessage alloc] initResponseWithStatusCode:101
 	                                                              description:@"Web Socket Protocol Handshake"
 	                                                                  version:HTTPVersion1_1];
 	

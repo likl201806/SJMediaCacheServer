@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "HTTPResponse.h"
+#import "SJHTTPResponse.h"
 
-@class HTTPConnection;
+@class SJHTTPConnection;
 
 /**
  * This is an asynchronous version of HTTPFileResponse.
@@ -11,9 +11,9 @@
  * An example of this is the HTTPDynamicFileResponse class.
 **/
 
-@interface HTTPAsyncFileResponse : NSObject <HTTPResponse>
+@interface SJHTTPAsyncFileResponse : NSObject <SJHTTPResponse>
 {	
-	HTTPConnection *connection;
+	SJHTTPConnection *connection;
 	
 	NSString *filePath;
 	UInt64 fileLength;
@@ -34,7 +34,7 @@
 	BOOL readSourceSuspended;
 }
 
-- (id)initWithFilePath:(NSString *)filePath forConnection:(HTTPConnection *)connection;
+- (id)initWithFilePath:(NSString *)filePath forConnection:(SJHTTPConnection *)connection;
 - (NSString *)filePath;
 
 @end

@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 @class GCDAsyncSocket;
-@class WebSocket;
+@class SJWebSocket;
 
 #if TARGET_OS_IPHONE
   #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 40000 // iPhone 4.0
@@ -18,7 +18,7 @@
 #endif
 
 
-@interface HTTPServer : NSObject IMPLEMENTED_PROTOCOLS
+@interface SJHTTPServer : NSObject IMPLEMENTED_PROTOCOLS
 {
 	// Underlying asynchronous TCP/IP socket
 	GCDAsyncSocket *asyncSocket;
@@ -199,7 +199,7 @@
 
 - (BOOL)isRunning;
 
-- (void)addWebSocket:(WebSocket *)ws;
+- (void)addWebSocket:(SJWebSocket *)ws;
 
 - (NSUInteger)numberOfHTTPConnections;
 - (NSUInteger)numberOfWebSocketConnections;

@@ -5,8 +5,8 @@
 //  Created by Валерий Гаврилов on 29.03.12.
 //  Copyright (c) 2012 LLC "Online Publishing Partners" (onlinepp.ru). All rights reserved.
 
-#import "MultipartMessageHeader.h"
-#import "MultipartMessageHeaderField.h"
+#import "SJMultipartMessageHeader.h"
+#import "SJMultipartMessageHeaderField.h"
 
 #import "HTTPLogging.h"
 
@@ -24,7 +24,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 //-----------------------------------------------------------------
 
 
-@implementation MultipartMessageHeader
+@implementation SJMultipartMessageHeader
 @synthesize fields,encoding;
 
 
@@ -49,7 +49,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 		// the !isspace condition is to support header unfolding
 		if( (*(uint16_t*) (bytes+offset)  == fields_separator) && ((offset == length - 2) || !(isspace(bytes[offset+2])) )) {
 			NSData* fieldData = [NSData dataWithBytesNoCopy:bytes length:offset freeWhenDone:NO];
-			MultipartMessageHeaderField* field = [[MultipartMessageHeaderField alloc] initWithData: fieldData  contentEncoding:formEncoding];
+			SJMultipartMessageHeaderField* field = [[SJMultipartMessageHeaderField alloc] initWithData: fieldData  contentEncoding:formEncoding];
 			if( field ) {
 				[fields setObject:field forKey:field.name];
 				HTTPLogVerbose(@"MultipartFormDataParser: Processed Header field '%@'",field.name);

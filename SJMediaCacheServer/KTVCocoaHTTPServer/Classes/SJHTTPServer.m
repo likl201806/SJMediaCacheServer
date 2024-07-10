@@ -1,7 +1,7 @@
-#import "HTTPServer.h"
+#import "SJHTTPServer.h"
 #import "GCDAsyncSocket.h"
-#import "HTTPConnection.h"
-#import "WebSocket.h"
+#import "SJHTTPConnection.h"
+#import "SJWebSocket.h"
 #import "HTTPLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -12,7 +12,7 @@
 // Other flags: trace
 static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 
-@interface HTTPServer (PrivateAPI)
+@interface SJHTTPServer (PrivateAPI)
 
 - (void)unpublishBonjour;
 - (void)publishBonjour;
@@ -26,11 +26,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface HTTPServer ()<GCDAsyncSocketDelegate>
+@interface SJHTTPServer ()<GCDAsyncSocketDelegate>
 
 @end
 
-@implementation HTTPServer
+@implementation SJHTTPServer
 
 /**
  * Standard Constructor.
@@ -58,7 +58,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 		asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:serverQueue];
 		
 		// Use default connection class of HTTPConnection
-		connectionClass = [HTTPConnection self];
+		connectionClass = [SJHTTPConnection self];
 		
 		// By default bind on all available interfaces, en1, wifi etc
 		interface = nil;
@@ -453,7 +453,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 		{
 			// Stop all HTTP connections the server owns
 			[connectionsLock lock];
-			for (HTTPConnection *connection in connections)
+			for (SJHTTPConnection *connection in connections)
 			{
 				[connection stop];
 			}
@@ -462,7 +462,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 			
 			// Stop all WebSocket connections the server owns
 			[webSocketsLock lock];
-			for (WebSocket *webSocket in webSockets)
+			for (SJWebSocket *webSocket in webSockets)
 			{
 				[webSocket stop];
 			}
@@ -483,7 +483,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 	return result;
 }
 
-- (void)addWebSocket:(WebSocket *)ws
+- (void)addWebSocket:(SJWebSocket *)ws
 {
 	[webSocketsLock lock];
 	
@@ -529,7 +529,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 #pragma mark Incoming Connections
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (HTTPConfig *)config
+- (SJHTTPConfig *)config
 {
 	// Override me if you want to provide a custom config to the new connection.
 	// 
@@ -542,12 +542,12 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_INFO; // | HTTP_LOG_FLAG_TRACE;
 	// Try the apache benchmark tool (already installed on your Mac):
 	// $  ab -n 1000 -c 1 http://localhost:<port>/some_path.html
 	
-	return [[HTTPConfig alloc] initWithServer:self documentRoot:documentRoot queue:connectionQueue];
+	return [[SJHTTPConfig alloc] initWithServer:self documentRoot:documentRoot queue:connectionQueue];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket
 {
-	HTTPConnection *newConnection = (HTTPConnection *)[[connectionClass alloc] initWithAsyncSocket:newSocket
+	SJHTTPConnection *newConnection = (SJHTTPConnection *)[[connectionClass alloc] initWithAsyncSocket:newSocket
 	                                                                                 configuration:[self config]];
 	[connectionsLock lock];
 	[connections addObject:newConnection];

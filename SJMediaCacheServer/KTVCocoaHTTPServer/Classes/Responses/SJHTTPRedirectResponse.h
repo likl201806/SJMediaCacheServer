@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "HTTPResponse.h"
+#import "SJHTTPResponse.h"
 
 
-@interface HTTPRedirectResponse : NSObject <HTTPResponse>
+@interface SJHTTPRedirectResponse : NSObject <SJHTTPResponse>
 {
 	NSString *redirectPath;
 }

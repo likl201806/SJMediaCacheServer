@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 
 @class GCDAsyncSocket;
-@class HTTPMessage;
-@class HTTPServer;
-@class WebSocket;
-@protocol HTTPResponse;
+@class SJHTTPMessage;
+@class SJHTTPServer;
+@class SJWebSocket;
+@protocol SJHTTPResponse;
 
 
 #define HTTPConnectionDidDieNotification  @"HTTPConnectionDidDie"
@@ -13,17 +13,17 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface HTTPConfig : NSObject
+@interface SJHTTPConfig : NSObject
 {
-	HTTPServer __unsafe_unretained *server;
+	SJHTTPServer __unsafe_unretained *server;
 	NSString __strong *documentRoot;
 	dispatch_queue_t queue;
 }
 
-- (id)initWithServer:(HTTPServer *)server documentRoot:(NSString *)documentRoot;
-- (id)initWithServer:(HTTPServer *)server documentRoot:(NSString *)documentRoot queue:(dispatch_queue_t)q;
+- (id)initWithServer:(SJHTTPServer *)server documentRoot:(NSString *)documentRoot;
+- (id)initWithServer:(SJHTTPServer *)server documentRoot:(NSString *)documentRoot queue:(dispatch_queue_t)q;
 
-@property (nonatomic, unsafe_unretained, readonly) HTTPServer *server;
+@property (nonatomic, unsafe_unretained, readonly) SJHTTPServer *server;
 @property (nonatomic, strong, readonly) NSString *documentRoot;
 @property (nonatomic, readonly) dispatch_queue_t queue;
 
@@ -33,15 +33,15 @@
 #pragma mark -
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface HTTPConnection : NSObject
+@interface SJHTTPConnection : NSObject
 {
 	dispatch_queue_t connectionQueue;
 	GCDAsyncSocket *asyncSocket;
-	HTTPConfig *config;
+	SJHTTPConfig *config;
 	
 	BOOL started;
 	
-	HTTPMessage *request;
+	SJHTTPMessage *request;
 	unsigned int numHeaderLines;
 	
 	BOOL sentResponseHeaders;
@@ -49,7 +49,7 @@
 	NSString *nonce;
 	long lastNC;
 	
-	NSObject<HTTPResponse> *httpResponse;
+	NSObject<SJHTTPResponse> *httpResponse;
 	
 	NSMutableArray *ranges;
 	NSMutableArray *ranges_headers;
@@ -64,7 +64,7 @@
 	NSMutableArray *responseDataSizes;
 }
 
-- (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(HTTPConfig *)aConfig;
+- (id)initWithAsyncSocket:(GCDAsyncSocket *)newSocket configuration:(SJHTTPConfig *)aConfig;
 
 - (void)start;
 - (void)stop;
@@ -90,8 +90,8 @@
 - (NSArray *)directoryIndexFileNames;
 - (NSString *)filePathForURI:(NSString *)path;
 - (NSString *)filePathForURI:(NSString *)path allowDirectory:(BOOL)allowDirectory;
-- (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path;
-- (WebSocket *)webSocketForURI:(NSString *)path;
+- (NSObject<SJHTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path;
+- (SJWebSocket *)webSocketForURI:(NSString *)path;
 
 - (void)prepareForBodyWithSize:(UInt64)contentLength;
 - (void)processBodyData:(NSData *)postDataChunk;
@@ -103,8 +103,8 @@
 - (void)handleInvalidRequest:(NSData *)data;
 - (void)handleUnknownMethod:(NSString *)method;
 
-- (NSData *)preprocessResponse:(HTTPMessage *)response;
-- (NSData *)preprocessErrorResponse:(HTTPMessage *)response;
+- (NSData *)preprocessResponse:(SJHTTPMessage *)response;
+- (NSData *)preprocessErrorResponse:(SJHTTPMessage *)response;
 
 - (void)finishResponse;
 
@@ -113,7 +113,7 @@
 
 @end
 
-@interface HTTPConnection (AsynchronousHTTPResponse)
-- (void)responseHasAvailableData:(NSObject<HTTPResponse> *)sender;
-- (void)responseDidAbort:(NSObject<HTTPResponse> *)sender;
+@interface SJHTTPConnection (AsynchronousHTTPResponse)
+- (void)responseHasAvailableData:(NSObject<SJHTTPResponse> *)sender;
+- (void)responseDidAbort:(NSObject<SJHTTPResponse> *)sender;
 @end

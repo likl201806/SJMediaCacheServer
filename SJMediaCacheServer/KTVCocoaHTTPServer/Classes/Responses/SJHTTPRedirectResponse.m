@@ -1,4 +1,4 @@
-#import "HTTPRedirectResponse.h"
+#import "SJHTTPRedirectResponse.h"
 #import "HTTPLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -10,7 +10,7 @@
 static const int httpLogLevel = HTTP_LOG_LEVEL_OFF; // | HTTP_LOG_FLAG_TRACE;
 
 
-@implementation HTTPRedirectResponse
+@implementation SJHTTPRedirectResponse
 
 - (id)initWithPath:(NSString *)path
 {

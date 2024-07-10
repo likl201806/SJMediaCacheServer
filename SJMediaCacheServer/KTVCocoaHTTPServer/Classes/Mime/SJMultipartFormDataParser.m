@@ -1,5 +1,5 @@
 
-#import "MultipartFormDataParser.h"
+#import "SJMultipartFormDataParser.h"
 #import "DDData.h"
 #import "HTTPLogging.h"
 
@@ -23,7 +23,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 //-----------------------------------------------------------------
 
 
-@interface MultipartFormDataParser (private)
+@interface SJMultipartFormDataParser (private)
 + (NSData*) decodedDataFromData:(NSData*) data encoding:(int) encoding;
 
 - (int) findHeaderEnd:(NSData*) workingData fromOffset:(int) offset;
@@ -42,7 +42,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 //-----------------------------------------------------------------
 
 
-@implementation MultipartFormDataParser 
+@implementation SJMultipartFormDataParser 
 @synthesize delegate,formEncoding;
 
 - (id) initWithBoundary:(NSString*) boundary formEncoding:(NSStringEncoding) _formEncoding {
@@ -219,7 +219,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 
 				// let the header parser do it's job from now on.
 				NSData * headerData = [NSData dataWithBytesNoCopy: (char*) workingData.bytes + offset length:headerEnd + 2 - offset freeWhenDone:NO];
-				currentHeader = [[MultipartMessageHeader alloc] initWithData:headerData formEncoding:formEncoding];
+				currentHeader = [[SJMultipartMessageHeader alloc] initWithData:headerData formEncoding:formEncoding];
 
 				if( nil == currentHeader ) {
 					// we've found the data is in wrong format.
@@ -258,7 +258,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN;
 				return YES;
 			}
 			// decode the chunk and let the delegate use it (store in a file, for example)
-			NSData* decodedData = [MultipartFormDataParser decodedDataFromData:[NSData dataWithBytesNoCopy:(char*)workingData.bytes + offset length:workingData.length - offset - sizeToLeavePending freeWhenDone:NO] encoding:currentEncoding];
+			NSData* decodedData = [SJMultipartFormDataParser decodedDataFromData:[NSData dataWithBytesNoCopy:(char*)workingData.bytes + offset length:workingData.length - offset - sizeToLeavePending freeWhenDone:NO] encoding:currentEncoding];
 			
 			if( [delegate respondsToSelector:@selector(processContent:WithHeader:)] ) {
 				HTTPLogVerbose(@"MultipartFormDataParser: Processed %"FMTNSINT" bytes of body",sizeToPass);

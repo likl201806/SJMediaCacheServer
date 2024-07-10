@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "HTTPResponse.h"
+#import "SJHTTPResponse.h"
 
 
-@interface HTTPDataResponse : NSObject <HTTPResponse>
+@interface SJHTTPDataResponse : NSObject <SJHTTPResponse>
 {
 	NSUInteger offset;
 	NSData *data;

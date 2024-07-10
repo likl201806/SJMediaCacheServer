@@ -1,5 +1,5 @@
-#import "HTTPDynamicFileResponse.h"
-#import "HTTPConnection.h"
+#import "SJHTTPDynamicFileResponse.h"
+#import "SJHTTPConnection.h"
 #import "HTTPLogging.h"
 
 #if ! __has_feature(objc_arc)
@@ -13,10 +13,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 #define NULL_FD  -1
 
 
-@implementation HTTPDynamicFileResponse
+@implementation SJHTTPDynamicFileResponse
 
 - (id)initWithFilePath:(NSString *)fpath
-         forConnection:(HTTPConnection *)parent
+         forConnection:(SJHTTPConnection *)parent
              separator:(NSString *)separatorStr
  replacementDictionary:(NSDictionary *)dict
 {
