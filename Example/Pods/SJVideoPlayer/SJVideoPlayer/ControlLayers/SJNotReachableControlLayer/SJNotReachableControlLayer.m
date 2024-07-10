@@ -21,6 +21,8 @@
 #import "Masonry.h"
 #endif
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 
@@ -110,9 +112,10 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 - (void)controlLayerNeedAppear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 - (void)controlLayerNeedDisappear:(__kindof SJBaseVideoPlayer *)videoPlayer {}
 
-- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willRotateView:(BOOL)isFull {
-    [self _updateItems:videoPlayer];
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer onRotationTransitioningChanged:(BOOL)isTransitioning {
+    if ( isTransitioning ) [self _updateItems:videoPlayer];
 }
+
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer willFitOnScreen:(BOOL)isFitOnScreen {
     [self _updateItems:videoPlayer];
 }
@@ -120,16 +123,16 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
 - (void)_updateItems:(__kindof SJBaseVideoPlayer *)videoPlayer {
     SJEdgeControlButtonItem *backItem = [_topAdapter itemForTag:SJNotReachableControlLayerTopItem_Back];
     BOOL isFitOnScreen = videoPlayer.isFitOnScreen;
-    BOOL isFull = videoPlayer.isFullScreen;
+    BOOL isFull = videoPlayer.isFullscreen;
     
     if ( backItem ) {
         if ( isFull || isFitOnScreen )
-            backItem.hidden = NO;
+            backItem.innerHidden = NO;
         else {
             if ( _hiddenBackButtonWhenOrientationIsPortrait )
-                backItem.hidden = YES;
+                backItem.innerHidden = YES;
             else
-                backItem.hidden = videoPlayer.isPlayOnScrollView;
+                backItem.innerHidden = videoPlayer.isPlayOnScrollView;
         }
     }
     [_topAdapter reload];
@@ -144,7 +147,7 @@ SJEdgeControlButtonItemTag const SJNotReachableControlLayerTopItem_Back = 10000;
     id<SJVideoPlayerLocalizedStrings> strings = SJVideoPlayerConfigurations.shared.localizedStrings;
     
     SJEdgeControlButtonItem *backItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJNotReachableControlLayerTopItem_Back];
-    [backItem addTarget:self action:@selector(backItemWasTapped:)];
+    [backItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(backItemWasTapped:)]];
     backItem.image = sources.backImage;
     [self.topAdapter addItem:backItem];
     [self.topAdapter reload];

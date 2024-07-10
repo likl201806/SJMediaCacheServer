@@ -68,7 +68,7 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 - (void)restartControlLayer {
     _restarted = YES;
     
-    if ( self.videoPlayer.isFullScreen )
+    if ( self.videoPlayer.isFullscreen )
         [self.videoPlayer needHiddenStatusBar];
     [self _refreshValueForSliderItems];
     sj_view_makeAppear(self.controlView, YES);
@@ -88,7 +88,7 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
         }
     }
     else if ( type == SJPlayerGestureType_Pan && !CGRectContainsPoint(self.rightContainerView.frame, location) ) {
-        return videoPlayer.gestureControl.movingDirection == SJPanGestureMovingDirection_V;
+        return videoPlayer.gestureController.movingDirection == SJPanGestureMovingDirection_V;
     }
     else if ( type == SJPlayerGestureType_DoubleTap )
         return YES;
@@ -109,7 +109,7 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 }
 
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer rateChanged:(float)rate {
-    [videoPlayer.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+    [videoPlayer.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
         make.append([NSString stringWithFormat:@"%.0f %%", rate * 100]);
         make.textColor(UIColor.whiteColor);
     }]];
@@ -118,22 +118,15 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 
 #pragma mark -
 
-- (void)sliderWillBeginDragging:(SJProgressSlider *)slider {
-    if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.volumeTracking = YES;
-    }
-    else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.brightnessTracking = YES;
-    }
-}
+- (void)sliderWillBeginDragging:(SJProgressSlider *)slider { }
 
 - (void)slider:(SJProgressSlider *)slider valueDidChange:(CGFloat)value {
     if ( slider.isDragging ) {
         if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-            _videoPlayer.deviceVolumeAndBrightnessManager.volume = slider.value;
+            _videoPlayer.deviceVolumeAndBrightnessController.volume = slider.value;
         }
         else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-            _videoPlayer.deviceVolumeAndBrightnessManager.brightness = slider.value;
+            _videoPlayer.deviceVolumeAndBrightnessController.brightness = slider.value;
         }
         else {
             _videoPlayer.rate = slider.value;
@@ -141,14 +134,7 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
     }
 }
 
-- (void)sliderDidEndDragging:(SJProgressSlider *)slider {
-    if ( slider.tag == SJMoreSettingControlLayerItem_Volume ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.volumeTracking = NO;
-    }
-    else if ( slider.tag == SJMoreSettingControlLayerItem_Brightness ) {
-        _videoPlayer.deviceVolumeAndBrightnessManager.brightnessTracking = NO;
-    }
-}
+- (void)sliderDidEndDragging:(SJProgressSlider *)slider { }
 
 #pragma mark -
 
@@ -194,8 +180,8 @@ SJEdgeControlButtonItemTag const SJMoreSettingControlLayerItem_Rate = 10002;
 }
 
 - (void)_refreshValueForSliderItems {
-    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:_videoPlayer.deviceVolumeAndBrightnessManager.volume];
-    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:_videoPlayer.deviceVolumeAndBrightnessManager.brightness];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Volume value:_videoPlayer.deviceVolumeAndBrightnessController.volume];
+    [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Brightness value:_videoPlayer.deviceVolumeAndBrightnessController.brightness];
     [self _setSliderValueForItemTag:SJMoreSettingControlLayerItem_Rate value:_videoPlayer.rate];
 }
 

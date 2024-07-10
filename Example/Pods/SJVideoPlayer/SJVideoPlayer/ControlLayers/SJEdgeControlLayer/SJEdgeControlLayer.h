@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 是否禁止网络状态变化提示
 ///
-@property (nonatomic, getter=isDisabledPromptWhenNetworkStatusChanges) BOOL disabledPromptWhenNetworkStatusChanges;
+@property (nonatomic, getter=isDisabledPromptingWhenNetworkStatusChanges) BOOL disabledPromptingWhenNetworkStatusChanges;
 
 ///
 /// 是否隐藏底部进度条
@@ -92,14 +92,31 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat bottomProgressIndicatorHeight;
 
 ///
-/// 自定义状态栏, 当 shouldShowCustomStatusBar 返回YES, 将会显示该状态栏
+/// 自定义状态栏, 当 shouldShowsCustomStatusBar 返回YES, 将会显示该状态栏
 ///
 @property (nonatomic, strong, null_resettable) UIView<SJFullscreenModeStatusBar> *customStatusBar NS_AVAILABLE_IOS(11.0);
 
 ///
 /// 是否应该显示自定义状态栏
 ///
-@property (nonatomic, copy, null_resettable) BOOL(^shouldShowCustomStatusBar)(SJEdgeControlLayer *controlLayer) NS_AVAILABLE_IOS(11.0);
+@property (nonatomic, copy, null_resettable) BOOL(^shouldShowsCustomStatusBar)(SJEdgeControlLayer *controlLayer) NS_AVAILABLE_IOS(11.0);
+
+///
+/// 是否自动选择`Rotation(旋转)`或`FitOnScreen(充满全屏)`
+///
+/// - Rotation(旋转): 播放器视图将会在横屏(全屏)与竖屏(小屏)之间切换
+///
+/// - FitOnScreen(充满全屏): 播放器视图将会在竖屏全屏与竖屏小屏之间切换
+///
+///     当视频`宽 > 高`时, 将执行 Rotation 相关方法.
+///     当视频`宽 < 高`时, 将执行 FitOnScreen 相关方法.
+///
+@property (nonatomic) BOOL automaticallyPerformRotationOrFitOnScreen;
+
+///
+/// 处于小屏时, 当点击全屏按钮后, 是否先竖屏撑满全屏.
+///
+@property (nonatomic) BOOL needsFitOnScreenFirst;
 
 @property (nonatomic, weak, nullable) id<SJEdgeControlLayerDelegate> delegate;
 @end

@@ -8,20 +8,12 @@
 
 #import "SJEdgeControlButtonItemView.h"
 
-NS_ASSUME_NONNULL_BEGIN
 @interface _SJItemCustomViewContainerView : UIView
 - (nullable __kindof UIView *)customView;
 
 @end
 
 @implementation _SJItemCustomViewContainerView
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    for ( UIView *subview in self.subviews ) {
-        subview.frame = self.bounds;
-    }
-}
-
 - (void)removeCustomView {
     UIView *_Nullable customView = self.customView;
     if ( customView != nil ) {
@@ -32,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addCustomView:(UIView *)customView {
     if ( self.customView != customView ) {
         [self removeCustomView];
+        customView.frame = self.bounds;
+        customView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self addSubview:customView];
     }
 }
@@ -61,8 +55,25 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event {
+    if ( [super pointInside:point withEvent:event] ) {
+        return [self _shouldPerformAction];
+    }
+    return NO;
+}
+
+- (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
+    if ( [self pointInside:point withEvent:event] ) {
+        if ( _item.customView != nil && _item.actions == nil ) {
+            return [_item.customView hitTest:[self convertPoint:point toView:_item.customView] withEvent:event];
+        }
+        return self;
+    }
+    return [super hitTest:point withEvent:event];
+}
+
 - (void)performAction {
-    [_item performAction];
+    [_item performActions];
 }
 
 - (void)reloadItemIfNeeded {
@@ -81,13 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
     _itemImageView.hidden = YES;
     _itemTitleLabel.hidden = YES;
     
-    if ( _item == nil ) {
+    if ( _item == nil || _item.isHidden ) {
         // clean
         [_containerView removeCustomView];
         return;
     }
-    
-    if ( _item.isHidden ) return;
     
     // 1.
     if ( _item.customView != nil ) {
@@ -97,6 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         else {
             _containerView = [_SJItemCustomViewContainerView.alloc initWithFrame:self.bounds];
+            _containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [self addSubview:_containerView];
         }
         
@@ -112,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         else {
             _itemImageView = [[UIImageView alloc] initWithFrame:self.bounds];
             _itemImageView.contentMode = UIViewContentModeCenter;
+            _itemImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [self addSubview:_itemImageView];
         }
         
@@ -128,6 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         else {
             _itemTitleLabel = [[UILabel alloc] initWithFrame:self.bounds];
+            _itemTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [self addSubview:_itemTitleLabel];
         }
         
@@ -145,11 +157,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    for ( UIView *subview in self.subviews ) {
-        subview.frame = self.bounds;
-    }
+- (BOOL)_shouldPerformAction {
+    if ( _item == nil )
+        return NO;
+    
+    if ( _item.isHidden == YES || _item.alpha < 0.01 )
+        return NO;
+    
+    if ( _item.customView == nil && _item.actions == nil )
+        return NO;
+    
+    return YES;
 }
 @end
-NS_ASSUME_NONNULL_END

@@ -30,6 +30,8 @@
 #import "SJAttributesFactory.h"
 #endif
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 #define SJEdgeControlLayerShowsMoreItemNotification @"SJEdgeControlLayerShowsMoreItemNotification"
 #define SJEdgeControlLayerIsEnabledClipsNotification @"SJEdgeControlLayerIsEnabledClipsNotification"
@@ -72,8 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface SJVideoPlayer ()<SJSwitchVideoDefinitionControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate, SJEdgeControlLayerDelegate>
-@property (nonatomic, strong, nullable) id<SJFloatSmallViewControllerObserverProtocol> sj_floatSmallViewControllerObserver;
+@interface SJVideoPlayer ()<SJVideoDefinitionSwitchingControlLayerDelegate, SJMoreSettingControlLayerDelegate, SJNotReachableControlLayerDelegate, SJEdgeControlLayerDelegate>
+@property (nonatomic, strong, nullable) id<SJSmallViewFloatingControllerObserverProtocol> sj_smallViewFloatingControllerObserver;
 @property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingInfoObserver *sj_switchingInfoObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerAppearManagerObserver> sj_appearManagerObserver;
 @property (nonatomic, strong, readonly) id<SJControlLayerSwitcherObserver> sj_switcherObserver;
@@ -97,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSString *)version {
-    return @"v3.3.0";
+    return @"v3.4.3";
 }
 
 + (instancetype)player {
@@ -109,7 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !self ) return nil;
     [self.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];   // 切换到添加的控制层
     self.defaultEdgeControlLayer.showsMoreItem = YES;                      // 显示更多按钮
-    self.defaultEdgeControlLayer.hiddenBottomProgressIndicator = NO;       // 显示底部进度条
     return self;
 }
 
@@ -159,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 点击了切换清晰度按钮
 ///
 - (void)_definitionItemWasTapped:(SJEdgeControlButtonItem *)definitionItem {
-    self.defaultSwitchVideoDefinitionControlLayer.assets = self.definitionURLAssets;
+    self.defaultVideoDefinitionSwitchingControlLayer.assets = self.definitionURLAssets;
     [self.switcher switchControlLayerForIdentifier:SJControlLayer_SwitchVideoDefinition];
 }
 
@@ -167,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 点击了返回按钮
 ///
 - (void)_backButtonWasTapped {
-    if ( self.isFullScreen && ![self _whetherToSupportOnlyOneOrientation] ) {
+    if ( self.isFullscreen && ![self _whetherToSupportOnlyOneOrientation] ) {
         [self rotate];
     }
     else if ( self.isFitOnScreen ) {
@@ -176,8 +177,13 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         UIViewController *vc = [self.view lookupResponderForClass:UIViewController.class];
         [vc.view endEditing:YES];
-        vc.presentingViewController ? [vc dismissViewControllerAnimated:YES completion:nil] :
-                                      [vc.navigationController popViewControllerAnimated:YES];
+        if ( vc.navigationController.viewControllers.count > 1 ) {
+            [vc.navigationController popViewControllerAnimated:YES];
+        }
+        else {
+            vc.presentingViewController ? [vc dismissViewControllerAnimated:YES completion:nil] :
+                                          [vc.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 
@@ -186,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 选择了一个清晰度
 ///
-- (void)controlLayer:(SJSwitchVideoDefinitionControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset {
+- (void)controlLayer:(SJVideoDefinitionSwitchingControlLayer *)controlLayer didSelectAsset:(SJVideoPlayerURLAsset *)asset {
     SJVideoPlayerURLAsset *selected = self.URLAsset;
     SJVideoDefinitionSwitchingInfo *info = self.definitionSwitchingInfo;
     if ( info.switchingAsset != nil && info.status != SJDefinitionSwitchStatusFailed ) {
@@ -224,9 +230,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)setFloatSmallViewController:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    [super setFloatSmallViewController:floatSmallViewController];
-    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
+- (void)setSmallViewFloatingController:(nullable id<SJSmallViewFloatingController>)smallViewFloatingController {
+    [super setSmallViewFloatingController:smallViewFloatingController];
+    [self _initializeSmallViewFloatingControllerObserverIfNeeded:smallViewFloatingController];
 }
 
 #pragma mark -
@@ -281,21 +287,21 @@ NS_ASSUME_NONNULL_BEGIN
     return _defaultNotReachableControlLayer;
 }
 
-@synthesize defaultFloatSmallViewControlLayer = _defaultFloatSmallViewControlLayer;
-- (SJFloatSmallViewControlLayer *)defaultFloatSmallViewControlLayer {
-    if ( _defaultFloatSmallViewControlLayer == nil ) {
-        _defaultFloatSmallViewControlLayer = [[SJFloatSmallViewControlLayer alloc] initWithFrame:self.view.bounds];
+@synthesize defaultSmallViewControlLayer = _defaultSmallViewControlLayer;
+- (SJSmallViewControlLayer *)defaultSmallViewControlLayer {
+    if ( _defaultSmallViewControlLayer == nil ) {
+        _defaultSmallViewControlLayer = [[SJSmallViewControlLayer alloc] initWithFrame:self.view.bounds];
     }
-    return _defaultFloatSmallViewControlLayer;
+    return _defaultSmallViewControlLayer;
 }
 
-@synthesize defaultSwitchVideoDefinitionControlLayer = _defaultSwitchVideoDefinitionControlLayer;
-- (SJSwitchVideoDefinitionControlLayer *)defaultSwitchVideoDefinitionControlLayer {
-    if ( _defaultSwitchVideoDefinitionControlLayer == nil ) {
-        _defaultSwitchVideoDefinitionControlLayer = [[SJSwitchVideoDefinitionControlLayer alloc] initWithFrame:self.view.bounds];
-        _defaultSwitchVideoDefinitionControlLayer.delegate = self;
+@synthesize defaultVideoDefinitionSwitchingControlLayer = _defaultVideoDefinitionSwitchingControlLayer;
+- (SJVideoDefinitionSwitchingControlLayer *)defaultVideoDefinitionSwitchingControlLayer {
+    if ( _defaultVideoDefinitionSwitchingControlLayer == nil ) {
+        _defaultVideoDefinitionSwitchingControlLayer = [[SJVideoDefinitionSwitchingControlLayer alloc] initWithFrame:self.view.bounds];
+        _defaultVideoDefinitionSwitchingControlLayer.delegate = self;
     }
-    return _defaultSwitchVideoDefinitionControlLayer;
+    return _defaultVideoDefinitionSwitchingControlLayer;
 }
 
 @synthesize sj_switchingInfoObserver = _sj_switchingInfoObserver;
@@ -311,21 +317,21 @@ NS_ASSUME_NONNULL_BEGIN
                 case SJDefinitionSwitchStatusUnknown:
                     break;
                 case SJDefinitionSwitchStatusSwitching: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append([NSString stringWithFormat:@"%@ %@", SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchingPrompt, info.switchingAsset.definition_fullName]);
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
                 case SJDefinitionSwitchStatusFinished: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append([NSString stringWithFormat:@"%@ %@", SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchSuccessfullyPrompt, info.currentPlayingAsset.definition_fullName]);
                         make.textColor(UIColor.whiteColor);
                     }]];
                 }
                     break;
                 case SJDefinitionSwitchStatusFailed: {
-                    [self.promptPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+                    [self.promptingPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                         make.append(SJVideoPlayerConfigurations.shared.localizedStrings.definitionSwitchFailedPrompt);
                         make.textColor(UIColor.whiteColor);
                     }]];
@@ -338,10 +344,10 @@ NS_ASSUME_NONNULL_BEGIN
     return _sj_switchingInfoObserver;
 }
 
-- (id<SJFloatSmallViewController>)floatSmallViewController {
-    id<SJFloatSmallViewController> floatSmallViewController = [super floatSmallViewController];
-    [self _initializeFloatSmallViewControllerObserverIfNeeded:floatSmallViewController];
-    return floatSmallViewController;
+- (id<SJSmallViewFloatingController>)smallViewFloatingController {
+    id<SJSmallViewFloatingController> smallViewFloatingController = [super smallViewFloatingController];
+    [self _initializeSmallViewFloatingControllerObserverIfNeeded:smallViewFloatingController];
+    return smallViewFloatingController;
 }
 
 #pragma mark -
@@ -375,9 +381,9 @@ NS_ASSUME_NONNULL_BEGIN
         else if ( identifier == SJControlLayer_LoadFailed )
             return self.defaultLoadFailedControlLayer;
         else if ( identifier == SJControlLayer_FloatSmallView )
-            return self.defaultFloatSmallViewControlLayer;
+            return self.defaultSmallViewControlLayer;
         else if ( identifier == SJControlLayer_SwitchVideoDefinition )
-            return self.defaultSwitchVideoDefinitionControlLayer;
+            return self.defaultVideoDefinitionSwitchingControlLayer;
         return nil;
     };
 }
@@ -398,11 +404,11 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_configurationsDidUpdate) name:SJVideoPlayerConfigurationsDidUpdateNotification object:nil];
 }
 
-- (void)_initializeFloatSmallViewControllerObserverIfNeeded:(nullable id<SJFloatSmallViewController>)floatSmallViewController {
-    if ( _sj_floatSmallViewControllerObserver.controller != floatSmallViewController ) {
-        _sj_floatSmallViewControllerObserver = [floatSmallViewController getObserver];
+- (void)_initializeSmallViewFloatingControllerObserverIfNeeded:(nullable id<SJSmallViewFloatingController>)smallViewFloatingController {
+    if ( _sj_smallViewFloatingControllerObserver.controller != smallViewFloatingController ) {
+        _sj_smallViewFloatingControllerObserver = [smallViewFloatingController getObserver];
         __weak typeof(self) _self = self;
-        _sj_floatSmallViewControllerObserver.appearStateDidChangeExeBlock = ^(id<SJFloatSmallViewController>  _Nonnull controller) {
+        _sj_smallViewFloatingControllerObserver.onAppearChanged = ^(id<SJSmallViewFloatingController>  _Nonnull controller) {
             __strong typeof(_self) self = _self;
             if ( !self ) return ;
             if ( controller.isAppeared ) {
@@ -414,7 +420,7 @@ NS_ASSUME_NONNULL_BEGIN
             else {
                 if ( self.switcher.currentIdentifier == SJControlLayer_FloatSmallView ) {
                     [self.controlLayerDataSource.controlView removeFromSuperview];
-                    [self.switcher switchToPreviousControlLayer];
+                    [self.switcher switchControlLayerForIdentifier:SJControlLayer_Edge];
                 }
             }
         };
@@ -491,7 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
     _sj_appearManagerObserver = [self.controlLayerAppearManager getObserver];
     
     __weak typeof(self) _self = self;
-    _sj_appearManagerObserver.appearStateDidChangeExeBlock = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
+    _sj_appearManagerObserver.onAppearChanged = ^(id<SJControlLayerAppearManager>  _Nonnull mgr) {
         __strong typeof(_self) self = _self;
         if ( !self ) return ;
         // refresh edge button items
@@ -539,9 +545,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_updateAppearStateForMoteItemIfNeeded {
     if ( _moreItem != nil ) {
-        BOOL isHidden = !self.isFullScreen;
+        BOOL isHidden = NO;
+        // 如果已经显示, 则小屏的时候隐藏;
+        if ( !self.moreItem.isHidden ) isHidden = !self.isFullscreen;
+        else isHidden = !(self.isFullscreen && !self.rotationManager.isRotating);
+        
         if ( isHidden != self.moreItem.isHidden ) {
-            self.moreItem.hidden = !self.isFullScreen;
+            self.moreItem.innerHidden = isHidden;
             [self.defaultEdgeControlLayer.topAdapter reload];
         }
     }
@@ -553,7 +563,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( _moreItem == nil ) {
                 _moreItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerTopItem_More];
                 _moreItem.image = SJVideoPlayerConfigurations.shared.resources.moreImage;
-                [_moreItem addTarget:self action:@selector(_moreItemWasTapped:)];
+                [_moreItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_moreItemWasTapped:)]];
                 [_defaultEdgeControlLayer.topAdapter addItem:_moreItem];
             }
             [self _updateAppearStateForMoteItemIfNeeded];
@@ -578,9 +588,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (@available(iOS 14.0, *)) {
             isPictureInPictureEnabled = self.playbackController.pictureInPictureStatus != SJPictureInPictureStatusUnknown;
         }
-        BOOL isHidden = (self.URLAsset == nil) || !self.isFullScreen || isUnsupportedFormat || isPictureInPictureEnabled;
+        BOOL isHidden = (self.URLAsset == nil) || !self.isFullscreen || isUnsupportedFormat || isPictureInPictureEnabled;
         if ( isHidden != _clipsItem.isHidden ) {
-            _clipsItem.hidden = isHidden;
+            _clipsItem.innerHidden = isHidden;
             [_defaultEdgeControlLayer.rightAdapter reload];
         }
     }
@@ -592,7 +602,7 @@ NS_ASSUME_NONNULL_BEGIN
             if ( _clipsItem == nil ) {
                 _clipsItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJEdgeControlLayerRightItem_Clips];
                 _clipsItem.image = SJVideoPlayerConfigurations.shared.resources.clipsImage;
-                [_clipsItem addTarget:self action:@selector(_clipsItemWasTapped:)];
+                [_clipsItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_clipsItemWasTapped:)]];
                 [_defaultEdgeControlLayer.rightAdapter addItem:_clipsItem];
             }
             [self _updateAppearStateForClipsItemIfNeeded];
@@ -642,7 +652,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark -
-@implementation SJVideoPlayer (SJExtendedSwitchVideoDefinitionControlLayer)
+@implementation SJVideoPlayer (SJExtendedVideoDefinitionSwitchingControlLayer)
 
 - (void)setDefinitionURLAssets:(nullable NSArray<SJVideoPlayerURLAsset *> *)definitionURLAssets {
     objc_setAssociatedObject(self, @selector(definitionURLAssets), definitionURLAssets, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -651,13 +661,13 @@ NS_ASSUME_NONNULL_BEGIN
     if ( definitionURLAssets != nil ) {
         if ( self.definitionItem == nil ) {
             self.definitionItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49xAutoresizing tag:SJEdgeControlLayerBottomItem_Definition];
-            [self.definitionItem addTarget:self action:@selector(_definitionItemWasTapped:)];
+            [self.definitionItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(_definitionItemWasTapped:)]];
             [adapter insertItem:self.definitionItem rearItem:SJEdgeControlLayerBottomItem_Full];
         }
         [self _updateContentForDefinitionItemIfNeeded];
     }
     else {
-        self->_defaultSwitchVideoDefinitionControlLayer = nil;
+        self->_defaultVideoDefinitionSwitchingControlLayer = nil;
         self.definitionItem = nil;
         [adapter removeItemForTag:SJEdgeControlLayerBottomItem_Definition];
         [self.switcher deleteControlLayerForIdentifier:SJControlLayer_SwitchVideoDefinition];
@@ -678,6 +688,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+@implementation SJVideoPlayer (RotationOrFitOnScreen)
+- (void)setAutomaticallyPerformRotationOrFitOnScreen:(BOOL)automaticallyPerformRotationOrFitOnScreen {
+    self.defaultEdgeControlLayer.automaticallyPerformRotationOrFitOnScreen = automaticallyPerformRotationOrFitOnScreen;
+}
+- (BOOL)automaticallyPerformRotationOrFitOnScreen {
+    return self.defaultEdgeControlLayer.automaticallyPerformRotationOrFitOnScreen;
+}
+
+- (void)setNeedsFitOnScreenFirst:(BOOL)needsFitOnScreenFirst {
+    self.defaultEdgeControlLayer.needsFitOnScreenFirst = needsFitOnScreenFirst;
+}
+- (BOOL)needsFitOnScreenFirst {
+    return self.defaultEdgeControlLayer.needsFitOnScreenFirst;
+}
+@end
+
 
 @implementation SJVideoPlayer (SJExtendedControlLayerSwitcher)
 - (void)switchControlLayerForIdentifier:(SJControlLayerIdentifier)identifier {

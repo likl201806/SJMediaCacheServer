@@ -34,6 +34,8 @@
 #import "SJControlLayerSwitcher.h"
 #import "SJVideoPlayerConfigurations.h"
 
+#import "SJEdgeControlButtonItemInternal.h"
+
 NS_ASSUME_NONNULL_BEGIN
 // right items
 static SJEdgeControlButtonItemTag SJClipsControlLayerRightItem_Screenshot = 10000;
@@ -91,7 +93,7 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
 
 - (void)_start:(SJVideoPlayerClipsOperation)operation {
     if ( _player.assetStatus != SJAssetStatusReadyToPlay ) {
-        [self.player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
+        [self.player.textPopupController show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
             make.append(SJVideoPlayerConfigurations.shared.localizedStrings.operationFailedPrompt);
             make.textColor(UIColor.whiteColor);
         }]];
@@ -154,15 +156,15 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
 
 - (void)_addItemToRightAdapter {
     SJEdgeControlButtonItem *screenshotItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_Screenshot];
-    [screenshotItem addTarget:self action:@selector(screenshotItemWasTapped)];
+    [screenshotItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(screenshotItemWasTapped)]];
     [self.rightAdapter addItem:screenshotItem];
     
     SJEdgeControlButtonItem *exportVideoItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_ExportVideo];
-    [exportVideoItem addTarget:self action:@selector(exportVideoItemWasTapped)];
+    [exportVideoItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(exportVideoItemWasTapped)]];
     [self.rightAdapter addItem:exportVideoItem];
     
     SJEdgeControlButtonItem *exportGIFItem = [SJEdgeControlButtonItem placeholderWithType:SJButtonItemPlaceholderType_49x49 tag:SJClipsControlLayerRightItem_ExportGIF];
-    [exportGIFItem addTarget:self action:@selector(exportGIFItemWasTapped)];
+    [exportGIFItem addAction:[SJEdgeControlButtonItemAction actionWithTarget:self action:@selector(exportGIFItemWasTapped)]];
     [self.rightAdapter addItem:exportGIFItem];
 }
 
@@ -170,15 +172,15 @@ static SJControlLayerIdentifier SJClipsResultsControlLayerIdentifier = 3;
     id<SJVideoPlayerControlLayerResources> sources = SJVideoPlayerConfigurations.shared.resources;
     SJEdgeControlButtonItem *screenshotItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_Screenshot];
     screenshotItem.image = sources.screenshotImage;
-    screenshotItem.hidden = _config.disableScreenshot;
+    screenshotItem.innerHidden = _config.disableScreenshot;
     
     SJEdgeControlButtonItem *exportVideoItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_ExportVideo];
     exportVideoItem.image = sources.videoClipImage;
-    exportVideoItem.hidden = _config.disableRecord;
+    exportVideoItem.innerHidden = _config.disableRecord;
     
     SJEdgeControlButtonItem *exportGIFItem = [self.rightAdapter itemForTag:SJClipsControlLayerRightItem_ExportGIF];
     exportGIFItem.image = sources.GIFClipImage;
-    exportGIFItem.hidden = _config.disableGIF;
+    exportGIFItem.innerHidden = _config.disableGIF;
     
     [self.rightAdapter reload];
 }

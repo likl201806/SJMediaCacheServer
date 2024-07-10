@@ -69,9 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isPictureInPictureSupported API_AVAILABLE(ios(14.0));
 @property (nonatomic) BOOL requiresLinearPlaybackInPictureInPicture API_AVAILABLE(ios(14.0));
+@property (nonatomic) BOOL canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2));
 @property (nonatomic, readonly) SJPictureInPictureStatus pictureInPictureStatus API_AVAILABLE(ios(14.0));
+@property (nonatomic, copy, nullable) void(^restoreUserInterfaceForPictureInPictureStop)(id<SJVideoPlayerPlaybackController> controller, void(^completionHandler)(BOOL restored));
 - (void)startPictureInPicture API_AVAILABLE(ios(14.0));
 - (void)stopPictureInPicture API_AVAILABLE(ios(14.0));
+- (void)cancelPictureInPicture API_AVAILABLE(ios(14.0));
 @end
 
 /// screenshot`
@@ -116,6 +119,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 // - new -
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller volumeDidChange:(float)volume;
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller rateDidChange:(float)rate;
+- (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller mutedDidChange:(BOOL)isMuted;
+
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller playbackDidFinish:(SJFinishedReason)reason;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller durationDidChange:(NSTimeInterval)duration;
 - (void)playbackController:(id<SJVideoPlayerPlaybackController>)controller currentTimeDidChange:(NSTimeInterval)currentTime;

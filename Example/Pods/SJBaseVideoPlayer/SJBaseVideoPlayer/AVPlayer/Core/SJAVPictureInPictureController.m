@@ -55,6 +55,14 @@ static NSString *kPictureInPicturePossible = @"pictureInPicturePossible";
 #endif
 }
 
+- (void)setCanStartPictureInPictureAutomaticallyFromInline:(BOOL)canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2)) {
+    _pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline = canStartPictureInPictureAutomaticallyFromInline;
+}
+
+- (BOOL)canStartPictureInPictureAutomaticallyFromInline API_AVAILABLE(ios(14.2)) {
+    return _pictureInPictureController.canStartPictureInPictureAutomaticallyFromInline;
+}
+
 - (BOOL)isAvailable {
     return _status != SJPictureInPictureStatusStopping && _status != SJPictureInPictureStatusStopped;
 }
@@ -169,7 +177,12 @@ static NSString *kPictureInPicturePossible = @"pictureInPicturePossible";
 }
  
 // 恢复界面(看后续是否需要)
-//- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
-//
-//}
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
+    if ( self.delegate != nil ) {
+        [self.delegate pictureInPictureController:self restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:completionHandler];
+    }
+    else { 
+        completionHandler(NO);
+    }
+}
 @end

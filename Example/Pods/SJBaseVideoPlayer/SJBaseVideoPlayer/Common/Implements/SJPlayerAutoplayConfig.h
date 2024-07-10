@@ -10,26 +10,16 @@
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJPlayerAutoplayDelegate;
 
-typedef NS_ENUM(NSUInteger, SJAutoplayScrollAnimationType) {
-    SJAutoplayScrollAnimationTypeNone,
-    SJAutoplayScrollAnimationTypeTop,
-    SJAutoplayScrollAnimationTypeMiddle,
-};
-
-typedef enum : NSUInteger {
-    SJAutoplayPositionTop,
-    SJAutoplayPositionMiddle,
-} SJAutoplayPosition;
-
 @interface SJPlayerAutoplayConfig : NSObject
-+ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate;
++ (instancetype)configWithPlayerSuperviewSelector:(nullable SEL)playerSuperviewSelector autoplayDelegate:(id<SJPlayerAutoplayDelegate>)delegate;
+
+@property (nonatomic, nullable) SEL playerSuperviewSelector;
+
 @property (nonatomic, weak, nullable, readonly) id<SJPlayerAutoplayDelegate> autoplayDelegate;
 
-/// 滚动的动画类型
-/// default is .Middle;
-@property (nonatomic) SJAutoplayScrollAnimationType animationType;
-/// default is .Middle;
-@property (nonatomic) SJAutoplayPosition autoplayPosition;
+/// 滑动方向默认为 垂直方向, 当 UICollectionView 水平滑动时, 记得设置此属性;
+@property (nonatomic) UICollectionViewScrollDirection scrollDirection;
+
 /// 可播区域的insets
 @property (nonatomic) UIEdgeInsets playableAreaInsets;
 @end
@@ -42,8 +32,9 @@ typedef enum : NSUInteger {
 
 /// 已弃用
 @interface SJPlayerAutoplayConfig (SJDeprecated)
++ (instancetype)configWithAutoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate  __deprecated_msg("use `configWithPlayerSuperviewSelector:autoplayDelegate:`;");
 + (instancetype)configWithPlayerSuperviewTag:(NSInteger)playerSuperviewTag
-                            autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate __deprecated_msg("use `configWithAutoplayDelegate`;");
-@property (nonatomic, readonly) NSInteger playerSuperviewTag __deprecated;
+                            autoplayDelegate:(id<SJPlayerAutoplayDelegate>)autoplayDelegate __deprecated_msg("use `configWithPlayerSuperviewSelector:autoplayDelegate:`;");
+@property (nonatomic, readonly) NSInteger playerSuperviewTag __deprecated_msg("use `config.scrollViewSelector`");
 @end
 NS_ASSUME_NONNULL_END

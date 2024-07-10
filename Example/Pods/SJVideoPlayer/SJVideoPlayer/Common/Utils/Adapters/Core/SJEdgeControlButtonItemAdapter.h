@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SJEdgeControlButtonItem *)itemAtIndex:(NSInteger)index;
 - (nullable SJEdgeControlButtonItem *)itemForTag:(SJEdgeControlButtonItemTag)tag;
 - (NSInteger)indexOfItemForTag:(SJEdgeControlButtonItemTag)tag;
+- (NSInteger)indexOfItem:(SJEdgeControlButtonItem *)item;
 - (nullable NSArray<SJEdgeControlButtonItem *> *)itemsWithRange:(NSRange)range;
 - (BOOL)isHiddenWithRange:(NSRange)range; // 此范围的items是否已隐藏
 - (BOOL)itemContainsPoint:(CGPoint)point; // 某个点是否在item中
@@ -66,6 +67,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 - (void)exchangeItemAtIndex:(NSInteger)idx1 withItemAtIndex:(NSInteger)idx2;
 - (void)exchangeItemForTag:(SJEdgeControlButtonItemTag)tag1 withItemForTag:(SJEdgeControlButtonItemTag)tag2;
+
+///
+/// 获取当前 item 对应视图
+///
+- (nullable UIView *)viewForItemAtIndex:(NSInteger)idx;
+- (nullable UIView *)viewForItemForTag:(SJEdgeControlButtonItemTag)tag;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new  NS_UNAVAILABLE;

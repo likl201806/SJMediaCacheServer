@@ -122,12 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setView:(nullable UIView<SJMediaPlayerView> *)view {
     if ( _view ) [_view removeFromSuperview];
     _view = view;
-    if ( view != nil ) [self addSubview:view];
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    _view.frame = self.bounds;
+    if ( view != nil ) {
+        view.frame = self.bounds;
+        view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self addSubview:view];
+    }
 }
 @end
 
@@ -143,6 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation SJMediaPlaybackController
+@synthesize canStartPictureInPictureAutomaticallyFromInline = _canStartPictureInPictureAutomaticallyFromInline;
 @synthesize requiresLinearPlaybackInPictureInPicture = _requiresLinearPlaybackInPictureInPicture;
 @synthesize pauseWhenAppDidEnterBackground = _pauseWhenAppDidEnterBackground;
 @synthesize periodicTimeInterval = _periodicTimeInterval;
@@ -197,6 +197,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)prepareToPlay {
+    if ( _media == nil ) return;
+    
     SJVideoPlayerURLAsset *media = _media;
     __weak typeof(self) _self = self;
     [self playerWithMedia:media completionHandler:^(id<SJMediaPlayer>  _Nullable player) {
@@ -239,6 +241,12 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 }
 
+- (void)cancelPictureInPicture API_AVAILABLE(ios(14.0)) {
+#ifdef DEBUG
+    NSLog(@"%@ 暂不支持画中画", NSStringFromClass(self.class));
+#endif
+}
+
 #pragma mark -
 
 - (void)pause {
@@ -262,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.reasonForWaitingToPlay = SJWaitingWhileEvaluatingBufferingRateReason;
         self.timeControlStatus = SJPlaybackTimeControlStatusWaitingToPlay;
         self.isPlaybackFinished ? [self.currentPlayer replay] : [self.currentPlayer play];
+        if ( self.currentPlayer.rate != self.rate ) self.currentPlayer.rate = self.rate;
         [self _toEvaluating];
     }
 }
@@ -297,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)refresh {
-    if ( self.currentPlayer.isPlayed && self.currentTime != 0 )
+    if ( self.currentPlayer.isPlayed && self.duration != 0 && self.currentTime != 0 )
         self.media.startPosition = self.currentTime;
     self.currentPlayer = nil;
     [self prepareToPlay];
@@ -400,7 +409,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSError *)error {
-    return nil;
+    return _currentPlayer.error;
 }
 
 - (BOOL)isPlayed {
@@ -470,18 +479,26 @@ NS_ASSUME_NONNULL_BEGIN
  
 - (void)setRate:(float)rate {
     _rate = rate;
-    if ( self.timeControlStatus == SJPlaybackTimeControlStatusPaused ) [self play];
-    _currentPlayer.rate = rate;
+    if ( self.timeControlStatus != SJPlaybackTimeControlStatusPaused ) _currentPlayer.rate = rate;
+    if ( [self.delegate respondsToSelector:@selector(playbackController:rateDidChange:)] ) {
+        [self.delegate playbackController:self rateDidChange:rate];
+    }
 }
 
 - (void)setVolume:(float)volume {
     _volume = volume;
     _currentPlayer.volume = volume;
+    if ( [self.delegate respondsToSelector:@selector(playbackController:volumeDidChange:)] ) {
+        [self.delegate playbackController:self volumeDidChange:volume];
+    }
 }
 
 - (void)setMuted:(BOOL)muted {
     _muted = muted;
     _currentPlayer.muted = muted;
+    if ( [self.delegate respondsToSelector:@selector(playbackController:mutedDidChange:)] ) {
+        [self.delegate playbackController:self mutedDidChange:muted];
+    }
 }
 
 - (void)setCurrentPlayer:(nullable id<SJMediaPlayer>)currentPlayer {
@@ -513,7 +530,64 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate playbackController:self timeControlStatusDidChange:timeControlStatus];
         }
     });
+    
+#ifdef DEBUG
+    [self showLog_TimeControlStatus];
+#endif
 }
+#ifdef DEBUG
+- (void)showLog_TimeControlStatus {
+    SJPlaybackTimeControlStatus status = self.timeControlStatus;
+    NSString *statusStr = nil;
+    switch ( status ) {
+        case SJPlaybackTimeControlStatusPaused: {
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.Paused\n", self];
+        }
+            break;
+        case SJPlaybackTimeControlStatusWaitingToPlay: {
+            NSString *reasonStr = nil;
+            if      ( self.reasonForWaitingToPlay == SJWaitingToMinimizeStallsReason ) {
+                reasonStr = @"WaitingToMinimizeStallsReason";
+            }
+            else if ( self.reasonForWaitingToPlay == SJWaitingWhileEvaluatingBufferingRateReason ) {
+                reasonStr = @"WaitingWhileEvaluatingBufferingRateReason";
+            }
+            else if ( self.reasonForWaitingToPlay == SJWaitingWithNoAssetToPlayReason ) {
+                reasonStr = @"WaitingWithNoAssetToPlayReason";
+            }
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.WaitingToPlay(Reason: %@)\n", self, reasonStr];
+        }
+            break;
+        case SJPlaybackTimeControlStatusPlaying: {
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.TimeControlStatus.Playing\n", self];
+        }
+            break;
+    }
+    
+    printf("%s", statusStr.UTF8String);
+}
+
+- (void)showLog_AssetStatus {
+    SJAssetStatus status = self.assetStatus;
+    NSString *statusStr = nil;
+    switch ( status ) {
+        case SJAssetStatusUnknown:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Unknown\n", self];
+            break;
+        case SJAssetStatusPreparing:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Preparing\n", self];
+            break;
+        case SJAssetStatusReadyToPlay:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.ReadyToPlay\n", self];
+            break;
+        case SJAssetStatusFailed:
+            statusStr = [NSString stringWithFormat:@"SJMediaPlaybackController<%p>.assetStatus.Failed\n", self];
+            break;
+    }
+    
+    printf("%s", statusStr.UTF8String);
+}
+#endif
 
 #pragma mark -
 
@@ -649,6 +723,10 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.delegate playbackController:self assetStatusDidChange:self.assetStatus];
             }
         });
+        
+#ifdef DEBUG
+        [self showLog_AssetStatus];
+#endif
     }
 }
 
@@ -808,6 +886,10 @@ NSNotificationName const SJMediaPlayerPlaybackDidFinishNotification = @"SJMediaP
 NSNotificationName const SJMediaPlayerDidReplayNotification = @"SJMediaPlayerDidReplayNotification";
 NSNotificationName const SJMediaPlayerDurationDidChangeNotification = @"SJMediaPlayerDurationDidChangeNotification";
 NSNotificationName const SJMediaPlayerPlayableDurationDidChangeNotification = @"SJMediaPlayerPlayableDurationDidChangeNotification";
+NSNotificationName const SJMediaPlayerRateDidChangeNotification = @"SJMediaPlayerRateDidChangeNotification";
+NSNotificationName const SJMediaPlayerVolumeDidChangeNotification = @"SJMediaPlayerVolumeDidChangeNotification";
+NSNotificationName const SJMediaPlayerMutedDidChangeNotification = @"SJMediaPlayerMutedDidChangeNotification";
+
 
 NSNotificationName const SJMediaPlayerViewReadyForDisplayNotification = @"SJMediaPlayerViewReadyForDisplayNotification";
 NSNotificationName const SJMediaPlayerPlaybackTypeDidChangeNotification = @"SJMediaPlayerPlaybackTypeDidChangeNotification";

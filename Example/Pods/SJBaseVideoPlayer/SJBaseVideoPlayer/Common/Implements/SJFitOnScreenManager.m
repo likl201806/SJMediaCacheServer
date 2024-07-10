@@ -57,6 +57,10 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
 - (BOOL)prefersHomeIndicatorAutoHidden {
     return YES;
 }
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
 @end
 
 @interface SJFitOnScreenModeNavigationController : UINavigationController
@@ -66,16 +70,12 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
 @implementation SJFitOnScreenModeNavigationController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationBarHidden = YES;
+    [super setNavigationBarHidden:YES animated:NO];
 }
 
-- (void)setNavigationBarHidden:(BOOL)navigationBarHidden {
-    [super setNavigationBarHidden:YES];
-}
+- (void)setNavigationBarHidden:(BOOL)navigationBarHidden { }
 
-- (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated {
-    [super setNavigationBarHidden:YES animated:animated];
-}
+- (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated { }
 
 - (BOOL)shouldAutorotate {
     return self.topViewController.shouldAutorotate;
@@ -87,7 +87,7 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
     return self.topViewController.preferredInterfaceOrientationForPresentation;
 }
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return _viewControllerManager.preferredStatusBarStyle;
+    return self.topViewController.preferredStatusBarStyle;
 }
 - (BOOL)prefersStatusBarHidden {
     return _viewControllerManager.prefersStatusBarHidden;
@@ -155,6 +155,10 @@ static NSNotificationName const SJFitOnScreenManagerTransitioningValueDidChangeN
             }];
         } 
     });
+}
+
+- (UIView *)superviewInFitOnScreen {
+    return self.viewController.view;
 }
 
 - (UIViewController *)topMostController {

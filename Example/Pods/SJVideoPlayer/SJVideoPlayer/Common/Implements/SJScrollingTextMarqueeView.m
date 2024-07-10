@@ -113,6 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (void)_setupViews {
+    self.userInteractionEnabled = NO;
+    
     _contentView = [UIView.alloc initWithFrame:CGRectZero];
     [self addSubview:_contentView];
     
@@ -151,6 +153,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_prepareForAnimation {
     [self _setRightFadeMask];
     
+    if ( _centered ) {
+        _leftLabel.sj_x = 0;
+    }
+    
     _rightLabel.hidden = NO;
     _rightLabel.attributedText = _leftLabel.attributedText;
     _rightLabel.sj_x = _leftLabel.sj_w + _margin;
@@ -163,6 +169,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self _removeFadeMasks];
     
     _rightLabel.hidden = YES;
+    
+    if ( _centered ) {
+        _leftLabel.sj_x = self.sj_w * 0.5 - _leftLabel.sj_w * 0.5;
+    }
 }
 
 - (void)_startAnimationIfNeededAfterDelay:(NSTimeInterval)seconds {

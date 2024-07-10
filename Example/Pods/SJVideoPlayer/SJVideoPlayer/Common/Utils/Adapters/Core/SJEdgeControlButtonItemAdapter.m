@@ -78,6 +78,10 @@ NS_ASSUME_NONNULL_BEGIN
     return index;
 }
 
+- (NSInteger)indexOfItem:(SJEdgeControlButtonItem *)item {
+    return [_items indexOfObject:item];
+}
+
 - (nullable NSArray<SJEdgeControlButtonItem *> *)itemsWithRange:(NSRange)range {
     return NSMaxRange(range) <= _items.count  ? [_items subarrayWithRange:range] : nil;
 }
@@ -173,6 +177,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self exchangeItemAtIndex:[self indexOfItemForTag:tag1] withItemAtIndex:[self indexOfItemForTag:tag2]];
 }
 
+- (nullable UIView *)viewForItemAtIndex:(NSInteger)idx {
+    if ( idx != NSNotFound ) {
+        return _views[idx];
+    }
+    return nil;
+}
+
+- (nullable UIView *)viewForItemForTag:(SJEdgeControlButtonItemTag)tag {
+    return [self viewForItemAtIndex:[self indexOfItemForTag:tag]];
+}
+
 #pragma mark -
 
 - (void)_reload {
@@ -253,16 +268,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event {
     SJEdgeControlButtonItem *_Nullable item = [self itemAtPoint:point];
-    if ( item == nil )
-        return NO;
-    
-    if ( item.isHidden == YES || item.alpha < 0.01 )
-        return NO;
-    
-    if ( item.customView == nil && item.target == nil )
-        return NO;
-    
+    if ( item != nil ) {
+        NSInteger index = [self indexOfItem:item];
+        SJEdgeControlButtonItemView *view = _views[index];
+        if ( index != NSNotFound ) return [view pointInside:[self convertPoint:point toView:view] withEvent:event];
+    }
     return [super pointInside:point withEvent:event];
+}
+
+- (nullable UIView *)hitTest:(CGPoint)point withEvent:(nullable UIEvent *)event {
+    SJEdgeControlButtonItem *_Nullable item = [self itemAtPoint:point];
+    if ( item != nil ) {
+        NSInteger index = [self indexOfItem:item];
+        SJEdgeControlButtonItemView *view = _views[index];
+        if ( index != NSNotFound ) return [view hitTest:[self convertPoint:point toView:view] withEvent:event];
+    }
+    return [super hitTest:point withEvent:event];
 }
 
 

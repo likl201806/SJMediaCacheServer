@@ -29,8 +29,8 @@
 #import "SJMoreSettingControlLayer.h"
 #import "SJLoadFailedControlLayer.h"
 #import "SJNotReachableControlLayer.h"
-#import "SJFloatSmallViewControlLayer.h"
-#import "SJSwitchVideoDefinitionControlLayer.h"
+#import "SJSmallViewControlLayer.h"
+#import "SJVideoDefinitionSwitchingControlLayer.h"
 #import "SJVideoPlayerResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -90,38 +90,16 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// 默认的小浮窗模式下的控制层
 ///
-@property (nonatomic, strong, readonly) SJFloatSmallViewControlLayer *defaultFloatSmallViewControlLayer;
+@property (nonatomic, strong, readonly) SJSmallViewControlLayer *defaultSmallViewControlLayer;
 
 ///
 /// 默认的切换清晰度时的控制层
 ///
-@property (nonatomic, strong, readonly) SJSwitchVideoDefinitionControlLayer *defaultSwitchVideoDefinitionControlLayer;
+@property (nonatomic, strong, readonly) SJVideoDefinitionSwitchingControlLayer *defaultVideoDefinitionSwitchingControlLayer;
 
 
 - (instancetype)_init;
 + (NSString *)version;
-@end
-
-@interface SJEdgeControlLayer (SJVideoPlayerExtended)
-///
-/// 是否在Top栏上显示`more item`(三个点). default value is YES
-///
-/// 如果需要关闭, 可以设置: player.defaultEdgeControlLayer.showsMoreItem = NO;
-///
-@property (nonatomic) BOOL showsMoreItem;
-
-///
-/// 是否开启剪辑功能
-///         - 默认是NO
-///         - 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
-///
-@property (nonatomic, getter=isEnabledClips) BOOL enabledClips;
-
-///
-/// 剪辑功能配置
-///
-@property (nonatomic, strong, null_resettable) SJVideoPlayerClipsConfig *clipsConfig;
-
 @end
 
 @interface SJVideoPlayer (CommonSettings)
@@ -155,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface SJVideoPlayer (SJExtendedSwitchVideoDefinitionControlLayer)
+@interface SJVideoPlayer (SJExtendedVideoDefinitionSwitchingControlLayer)
 
 ///
 /// 切换清晰度
@@ -192,6 +170,48 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
  
+
+@interface SJVideoPlayer (RotationOrFitOnScreen)
+///
+/// 当视频`宽 > 高`时, 将执行 Rotation(旋转至横屏全屏) 相关方法.
+///
+/// 当视频`宽 < 高`时, 将执行 FitOnScreen(竖屏全屏) 相关方法.
+///
+///     - Rotation: 播放器视图将会在横屏(全屏)与竖屏(小屏)之间切换
+///
+///     - FitOnScreen: 播放器视图将会在竖屏全屏与竖屏小屏之间切换
+///
+@property (nonatomic) BOOL automaticallyPerformRotationOrFitOnScreen;
+
+///
+/// 处于小屏时, 当点击全屏按钮后, 是否先竖屏撑满全屏.
+///
+@property (nonatomic) BOOL needsFitOnScreenFirst;
+
+@end
+
+
+@interface SJEdgeControlLayer (SJVideoPlayerExtended)
+///
+/// 是否在Top栏上显示`more item`(三个点). default value is YES
+///
+/// 如果需要关闭, 可以设置: player.defaultEdgeControlLayer.showsMoreItem = NO;
+///
+@property (nonatomic) BOOL showsMoreItem;
+
+///
+/// 是否开启剪辑功能
+///         - 默认是NO
+///         - 不支持剪辑m3u8(如果开启, 将会自动隐藏剪辑按钮)
+///
+@property (nonatomic, getter=isEnabledClips) BOOL enabledClips;
+
+///
+/// 剪辑功能配置
+///
+@property (nonatomic, strong, null_resettable) SJVideoPlayerClipsConfig *clipsConfig;
+
+@end
 
 @interface SJVideoPlayer (SJExtendedControlLayerSwitcher)
 

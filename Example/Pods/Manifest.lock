@@ -1,75 +1,75 @@
 PODS:
   - CocoaAsyncSocket (7.6.5)
   - Masonry (1.1.0)
-  - SJBaseVideoPlayer (3.5.2):
+  - SJBaseVideoPlayer (3.7.6):
     - Masonry
-    - SJBaseVideoPlayer/AVPlayer (= 3.5.2)
-    - SJBaseVideoPlayer/Common (= 3.5.2)
+    - SJBaseVideoPlayer/AVPlayer (= 3.7.6)
+    - SJBaseVideoPlayer/Common (= 3.7.6)
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/AVPlayer (3.5.2):
+  - SJBaseVideoPlayer/AVPlayer (3.7.6):
     - Masonry
     - SJBaseVideoPlayer/Common
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/Common (3.5.2):
+  - SJBaseVideoPlayer/Common (3.7.6):
     - Masonry
     - SJBaseVideoPlayer/ResourceLoader
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJBaseVideoPlayer/ResourceLoader (3.5.2):
+  - SJBaseVideoPlayer/ResourceLoader (3.7.6):
     - Masonry
     - SJUIKit/AttributesFactory (>= 0.0.0.38)
     - SJUIKit/ObserverHelper
     - SJUIKit/Queues
     - SJUIKit/SQLite3
-  - SJMediaCacheServer (1.7.8):
-    - SJMediaCacheServer/Core (= 1.7.8)
-    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.7.8)
+  - SJMediaCacheServer (1.1):
+    - SJMediaCacheServer/Core (= 1.1)
+    - SJMediaCacheServer/KTVCocoaHTTPServer (= 1.1)
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/Core (1.7.8):
+  - SJMediaCacheServer/Core (1.1):
     - SJMediaCacheServer/KTVCocoaHTTPServer
     - SJUIKit/SQLite3
-  - SJMediaCacheServer/KTVCocoaHTTPServer (1.7.8):
+  - SJMediaCacheServer/KTVCocoaHTTPServer (1.1):
     - CocoaAsyncSocket
     - SJUIKit/SQLite3
-  - SJUIKit/AttributesFactory (0.0.0.52):
-    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.52)
-    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.52)
-  - SJUIKit/AttributesFactory/Deprecated (0.0.0.52)
-  - SJUIKit/AttributesFactory/UIKitText (0.0.0.52)
-  - SJUIKit/ObserverHelper (0.0.0.52)
-  - SJUIKit/Queues (0.0.0.52)
-  - SJUIKit/SQLite3 (0.0.0.52):
-    - SJUIKit/SQLite3/Core (= 0.0.0.52)
-    - SJUIKit/SQLite3/Protocol (= 0.0.0.52)
+  - SJUIKit/AttributesFactory (0.0.0.59):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.59)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.59)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.59)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.59)
+  - SJUIKit/ObserverHelper (0.0.0.59)
+  - SJUIKit/Queues (0.0.0.59)
+  - SJUIKit/SQLite3 (0.0.0.59):
+    - SJUIKit/SQLite3/Core (= 0.0.0.59)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.59)
     - YYModel
-  - SJUIKit/SQLite3/Core (0.0.0.52):
+  - SJUIKit/SQLite3/Core (0.0.0.59):
     - SJUIKit/SQLite3/Protocol
     - YYModel
-  - SJUIKit/SQLite3/Protocol (0.0.0.52):
+  - SJUIKit/SQLite3/Protocol (0.0.0.59):
     - YYModel
-  - SJVideoPlayer (3.3.0):
-    - SJBaseVideoPlayer (>= 3.5.0)
-    - SJVideoPlayer/Common (= 3.3.0)
-    - SJVideoPlayer/ControlLayers (= 3.3.0)
-    - SJVideoPlayer/ResourceLoader (= 3.3.0)
-  - SJVideoPlayer/Common (3.3.0):
+  - SJVideoPlayer (3.4.3):
+    - SJBaseVideoPlayer (>= 3.7.5)
+    - SJVideoPlayer/Common (= 3.4.3)
+    - SJVideoPlayer/ControlLayers (= 3.4.3)
+    - SJVideoPlayer/ResourceLoader (= 3.4.3)
+  - SJVideoPlayer/Common (3.4.3):
     - Masonry
-    - SJBaseVideoPlayer (>= 3.5.0)
+    - SJBaseVideoPlayer (>= 3.7.5)
     - SJUIKit/AttributesFactory
     - SJVideoPlayer/ResourceLoader
-  - SJVideoPlayer/ControlLayers (3.3.0):
-    - SJBaseVideoPlayer (>= 3.5.0)
+  - SJVideoPlayer/ControlLayers (3.4.3):
+    - SJBaseVideoPlayer (>= 3.7.5)
     - SJVideoPlayer/Common
-  - SJVideoPlayer/ResourceLoader (3.3.0):
-    - SJBaseVideoPlayer (>= 3.5.0)
+  - SJVideoPlayer/ResourceLoader (3.4.3):
+    - SJBaseVideoPlayer (>= 3.7.5)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
@@ -93,10 +93,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  SJBaseVideoPlayer: c8f2fdb374ec2c946c37b1f39eee24f0812a979b
-  SJMediaCacheServer: 95bebce42f281fccaff25a5e8284022478ff7ba5
-  SJUIKit: 8246b1001e616b0dbd090309fd58cdd609ae3fd4
-  SJVideoPlayer: f819c5074aea5192fe624784f8a7e820e45b85cf
+  SJBaseVideoPlayer: f15debaa8c1e27b63bdefc8caeec515e9c71d079
+  SJMediaCacheServer: a09e0c52d0b6705b1dcf955905c27b069c408c33
+  SJUIKit: a40111941e408cc17d4c1c23495aa92999e814b0
+  SJVideoPlayer: 4f09814f58522e0975cb2dccfda925f6c8643467
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
 PODFILE CHECKSUM: 690818b1e4af91654d69c268d523fe8d360cee62
