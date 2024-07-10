@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SJMediaCacheServer'
-  s.version          = '1.7.8'
+  s.version          = '1.1'
   s.summary          = 'A HTTP Media Caching Framework. It can cache FILE or HLS media.'
 
 # This description is used to generate tags and improve search results.
@@ -17,12 +17,12 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = 'https://github.com/changsanjiang/SJMediaCacheServer/blob/master/README.md'
+  s.description      = 'https://github.com/likl201806/SJMediaCacheServer/blob/master/README.md'
 
-  s.homepage         = 'https://github.com/changsanjiang/SJMediaCacheServer'
+  s.homepage         = 'https://github.com/likl201806/SJMediaCacheServer'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'changsanjiang' => 'changsanjiang@gmail.com' }
+  s.author           = { 'likl201806' => 'weirongwei2016@126.com' }
   s.source           = { :git => 'https://github.com/likl201806/SJMediaCacheServer.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
